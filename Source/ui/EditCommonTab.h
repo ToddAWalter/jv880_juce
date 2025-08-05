@@ -16,7 +16,7 @@
 //==============================================================================
 /*
 */
-class EditCommonTab  : public juce::Component, public juce::Slider::Listener, public juce::Button::Listener, public juce::ComboBox::Listener
+class EditCommonTab  : public juce::Component, public juce::Slider::Listener, public juce::Button::Listener, public juce::ComboBox::Listener, public juce::TextEditor::Listener
 {
 public:
     EditCommonTab(Jv880_juceAudioProcessor&);
@@ -30,6 +30,8 @@ public:
     void buttonClicked (juce::Button*) override;
     void buttonStateChanged (juce::Button*) override;
     void comboBoxChanged (juce::ComboBox*) override;
+    void textEditorTextChanged (juce::TextEditor&) override;
+    void sendSysexPatchCommonChange();
 
 private:
     Jv880_juceAudioProcessor& audioProcessor;
@@ -53,6 +55,8 @@ private:
     juce::Label chorusLevelLabel;
     juce::Slider chorusDepthSlider;
     juce::Label chorusDepthLabel;
+    juce::Slider chorusRateSlider;
+    juce::Label chorusRateLabel;
     juce::Slider chorusFeedbackSlider;
     juce::Label chorusFeedbackLabel;
     juce::Label chorusOutputLabel;

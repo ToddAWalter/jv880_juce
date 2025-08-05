@@ -16,6 +16,7 @@
 EditCommonTab::EditCommonTab(Jv880_juceAudioProcessor& p) : audioProcessor (p)
 {
     addAndMakeVisible (patchNameEditor);
+    patchNameEditor.addListener (this);
     addAndMakeVisible (patchNameLabel);
     patchNameLabel.setText ("Patch Name", juce::dontSendNotification);
     patchNameLabel.attachToComponent (&patchNameEditor, true);
@@ -81,6 +82,13 @@ EditCommonTab::EditCommonTab(Jv880_juceAudioProcessor& p) : audioProcessor (p)
     addAndMakeVisible(chorusDepthLabel);
     chorusDepthLabel.setText ("Chorus Depth", juce::dontSendNotification);
     chorusDepthLabel.attachToComponent (&chorusDepthSlider, true);
+    
+    addAndMakeVisible(chorusRateSlider);
+    chorusRateSlider.setRange (0, 127);
+    chorusRateSlider.addListener (this);
+    addAndMakeVisible(chorusRateSlider);
+    chorusRateLabel.setText ("Chorus Rate", juce::dontSendNotification);
+    chorusRateLabel.attachToComponent (&chorusRateSlider, true);
     
     addAndMakeVisible(chorusFeedbackSlider);
     chorusFeedbackSlider.setRange (0, 127);
@@ -182,13 +190,14 @@ void EditCommonTab::updateValues()
 
     patchNameEditor         .setText(juce::String(patch->name, 0xc), juce::dontSendNotification);
     velocitySwitchToggle    .setToggleState((patch->recChorConfig & 0x80) != 0, juce::dontSendNotification);
-    reverbTypeComboBox      .setSelectedItemIndex(patch->recChorConfig & 0xf, juce::dontSendNotification);
+    reverbTypeComboBox      .setSelectedItemIndex(patch->recChorConfig & 0x7, juce::dontSendNotification);
     reverbLevelSlider       .setValue(patch->reverbLevel, juce::dontSendNotification);
     reverbTimeSlider        .setValue(patch->reverbTime, juce::dontSendNotification);
     delayFeedbackSlider     .setValue(patch->reverbFeedback, juce::dontSendNotification);
     chorusTypeComboBox      .setSelectedItemIndex((patch->recChorConfig >> 4) & 0x3, juce::dontSendNotification);
     chorusLevelSlider       .setValue(patch->chorusLevel & 0x7f, juce::dontSendNotification);
     chorusDepthSlider       .setValue(patch->chorusDepth, juce::dontSendNotification);
+    chorusRateSlider       .setValue(patch->chorusRate, juce::dontSendNotification);
     chorusFeedbackSlider    .setValue(patch->chorusFeedback, juce::dontSendNotification);
     chorusOutputComboBox    .setSelectedItemIndex((patch->chorusLevel & 0x80) != 0, juce::dontSendNotification);
     analogFeelSlider        .setValue(patch->analogFeel, juce::dontSendNotification);
@@ -229,8 +238,9 @@ void EditCommonTab::resized()
     chorusTypeComboBox     .setBounds(sliderLeft1, top + height * 6 + groupMargin * 2, width, height);
     chorusLevelSlider      .setBounds(sliderLeft1, top + height * 7 + groupMargin * 2, width, height);
     chorusDepthSlider      .setBounds(sliderLeft1, top + height * 8 + groupMargin * 2, width, height);
-    chorusFeedbackSlider   .setBounds(sliderLeft1, top + height * 9 + groupMargin * 2, width, height);
-    chorusOutputComboBox   .setBounds(sliderLeft1, top + height * 10 + groupMargin * 2, width, height);
+    chorusRateSlider      .setBounds(sliderLeft1, top + height * 9 + groupMargin * 2, width, height);
+    chorusFeedbackSlider   .setBounds(sliderLeft1, top + height * 10 + groupMargin * 2, width, height);
+    chorusOutputComboBox   .setBounds(sliderLeft1, top + height * 11 + groupMargin * 2, width, height);
     
     analogFeelSlider       .setBounds(sliderLeft2, top + height * 0 + groupMargin * 0, width, height);
     levelSlider            .setBounds(sliderLeft2, top + height * 1 + groupMargin * 0, width, height);
@@ -248,31 +258,129 @@ void EditCommonTab::resized()
 
 void EditCommonTab::sliderValueChanged (juce::Slider* slider)
 {
-    // if (slider == &masterTuneSlider) {
-    //   uint32_t address = 0x01;
-    //   uint8_t value = (uint8_t) masterTuneSlider.getValue();
-    //   audioProcessor.sendSysexParamChange(address, value);
-    // }
+    if (slider == &reverbLevelSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &reverbTimeSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &delayFeedbackSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &chorusLevelSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &chorusDepthSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &chorusRateSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &chorusFeedbackSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &analogFeelSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &levelSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &panSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &bendRangeDownSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &bendRangeUpSlider)
+        sendSysexPatchCommonChange();
+    if (slider == &portamentoTimeSlider)
+        sendSysexPatchCommonChange();
 }
 
 void EditCommonTab::buttonClicked (juce::Button* button)
 {
-    // if (button == &reverbToggle) {
-    //   uint32_t address = 0x04;
-    //   uint8_t value = reverbToggle.getToggleState() ? 1 : 0;
-    //   audioProcessor.sendSysexParamChange(address, value);
-    // }
-    // if (button == &chorusToggle) {
-    //   uint32_t address = 0x05;
-    //   uint8_t value = chorusToggle.getToggleState() ? 1 : 0;
-    //   audioProcessor.sendSysexParamChange(address, value);
-    // }
+    if (button == &velocitySwitchToggle)
+        sendSysexPatchCommonChange();
+    if (button == &soloLegatoToggle)
+        sendSysexPatchCommonChange();
+    if (button == &portamentoToggle)
+        sendSysexPatchCommonChange();
 }
 
 void EditCommonTab::buttonStateChanged (juce::Button* button)
 {
 }
 
-void EditCommonTab::comboBoxChanged (juce::ComboBox* button)
+void EditCommonTab::comboBoxChanged (juce::ComboBox* comboBox)
 {
+    if (comboBox == &reverbTypeComboBox)
+        sendSysexPatchCommonChange();
+    if (comboBox == &chorusTypeComboBox)
+        sendSysexPatchCommonChange();
+    if (comboBox == &chorusOutputComboBox)
+        sendSysexPatchCommonChange();
+    if (comboBox == &keyAssignComboBox)
+        sendSysexPatchCommonChange();
+    if (comboBox == &portamentoModeComboBox)
+        sendSysexPatchCommonChange();
+    if (comboBox == &portamentoTypeComboBox)
+        sendSysexPatchCommonChange();
+}
+
+void EditCommonTab::textEditorTextChanged (juce::TextEditor& textEditor)
+{
+    if (&textEditor == &patchNameEditor)
+        sendSysexPatchCommonChange();
+}
+
+void EditCommonTab::sendSysexPatchCommonChange()
+{
+    uint8_t buf[45];
+    buf[0] = 0xf0;
+    buf[1] = 0x41;
+    buf[2] = 0x10; // unit number
+    buf[3] = 0x46;
+    buf[4] = 0x12; // command
+    buf[5] = 0x00;
+    buf[6] = 0x08;
+    buf[7] = 0x20;
+    buf[8] = 0x00;
+    for (int i = 0; i < juce::jmin(12, patchNameEditor.getText().length()); i++)
+      {
+          buf[i + 9] = patchNameEditor.getText()[i];
+      }
+    if (patchNameEditor.getText().length() < 12)
+      for (int i = patchNameEditor.getText().length(); i < 12; i++)
+          {
+              buf[i + 9] = 0x20;
+          }
+    buf[21] = velocitySwitchToggle.getToggleStateValue() == 1 ? 0x01 : 0x00;
+    buf[22] = reverbTypeComboBox.getSelectedItemIndex();
+    buf[23] = uint8_t(reverbLevelSlider.getValue());
+    buf[24] = uint8_t(reverbTimeSlider.getValue());
+    buf[25] = uint8_t(delayFeedbackSlider.getValue());
+    buf[26] = chorusTypeComboBox.getSelectedItemIndex();
+    buf[27] = uint8_t(chorusLevelSlider.getValue());
+    buf[28] = uint8_t(chorusDepthSlider.getValue());
+    buf[29] = uint8_t(chorusRateSlider.getValue());
+    buf[30] = uint8_t(chorusFeedbackSlider.getValue());
+    buf[31] = chorusOutputComboBox.getSelectedItemIndex();
+    buf[32] = uint8_t(analogFeelSlider.getValue());
+    buf[33] = uint8_t(levelSlider.getValue());
+    buf[34] = uint8_t(panSlider.getValue());
+    buf[35] = uint8_t(bendRangeDownSlider.getValue());
+    buf[36] = uint8_t(bendRangeUpSlider.getValue());
+    buf[37] = keyAssignComboBox.getSelectedItemIndex();
+    buf[38] = soloLegatoToggle.getToggleStateValue() == 1 ? 0x01 : 0x00;
+    buf[39] = portamentoToggle.getToggleStateValue() == 1 ? 0x01 : 0x00;
+    buf[40] = portamentoModeComboBox.getSelectedItemIndex();
+    buf[41] = portamentoTypeComboBox.getSelectedItemIndex();
+    buf[42] = uint8_t(portamentoTimeSlider.getValue());
+    
+    uint32_t checksum = 0;
+    
+    for (size_t i = 5; i < 43; i++) {
+      checksum += buf[i];
+      if (checksum >= 128) {
+        checksum -= 128;
+      }
+    }
+    
+    checksum = 128 - checksum;
+    
+    buf[43] = checksum;
+    buf[44] = 0xf7;
+
+    audioProcessor.mcuLock.enter();
+    audioProcessor.mcu->postMidiSC55(buf, 45);
+    audioProcessor.mcuLock.exit();
 }
