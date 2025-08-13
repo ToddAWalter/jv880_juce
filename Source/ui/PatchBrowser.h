@@ -98,7 +98,7 @@ private:
     }
 
     int getNumRows() override {
-      if (!parent->audioProcessor.loaded || !(romInfos[std::max(groupI, 1) + 5].loaded)) {
+      if (!parent->audioProcessor.loaded || !(romInfos[std::max(groupI, 1) + romCountRequired].loaded)) {
         return 0;
       }
 

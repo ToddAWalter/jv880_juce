@@ -98,7 +98,7 @@ int getRomIndex(const char *filename) {
 }
 
 bool loadRom(int romI, uint8_t *dst, std::array<uint8_t *, romCount> &cache) {
-  if (romI < 26 && cache[romI] != nullptr) {
+  if (romI < romCountChk && cache[romI] != nullptr) {
     if (dst != nullptr)
       memcpy(dst, cache[romI], romInfos[romI].length);
     romInfos[romI].loaded = true;
@@ -152,7 +152,7 @@ bool loadRom(int romI, uint8_t *dst, std::array<uint8_t *, romCount> &cache) {
   const char *sumToCompare = !shouldUnscramble && romInfo->needsUnscramble
                                  ? romInfo->checksumUnscrambled
                                  : romInfo->checksum;
-  if (readt != romInfo->length || (strcmp(shasumHex, sumToCompare) != 0 && romI < 26)) {
+  if (readt != romInfo->length || (strcmp(shasumHex, sumToCompare) != 0 && romI < romCountChk)) {
     free(data);
     romInfos[romI].loaded = false;
     return false;
@@ -230,7 +230,7 @@ bool preloadAll(std::array<uint8_t *, romCount> &cache) {
   }
 
   for (int i = 0; i < romCount; i++) {
-    if (!loadRom(i, nullptr, cache) && i < 5)
+    if (!loadRom(i, nullptr, cache) && i < romCountRequired)
       return false;
   }
   return true;
