@@ -31,7 +31,10 @@ private:
 
     juce::TabbedComponent tabs;
     EditCommonTab editCommon;
-    EditToneTab editTone;
+    EditToneTab editTone1;
+    EditToneTab editTone2;
+    EditToneTab editTone3;
+    EditToneTab editTone4;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditTab)
 };
