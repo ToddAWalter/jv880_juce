@@ -154,6 +154,7 @@ bool loadRom(int romI, uint8_t *dst, std::array<uint8_t *, romCount> &cache) {
                                  : romInfo->checksum;
   if (readt != romInfo->length || (strcmp(shasumHex, sumToCompare) != 0 && romI < 26)) {
     free(data);
+    romInfos[romI].loaded = false;
     return false;
   }
 
