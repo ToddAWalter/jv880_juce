@@ -40,7 +40,7 @@ static const char *groupNames[] = {
 };
 
 const int columns = 6;
-const int rowPerColumn = 43;
+const int rowPerColumn = 44;
 
 //==============================================================================
 /*
@@ -98,7 +98,7 @@ private:
     }
 
     int getNumRows() override {
-      if (!parent->audioProcessor.loaded || (groupI > 0 && !romInfos[std::max(groupI, 0) + romCountRequired].loaded) || (groupI == 1 && !romInfos[std::max(groupI, 0) + romCountRequired - 1].loaded)) {
+      if (!parent->audioProcessor.loaded || (groupI <= 1 && romInfos[std::max(groupI, 0) + romCountRequired + 5].loaded == false) || (groupI > 0 && romInfos[std::max(groupI, 0) + romCountRequired + 1].loaded == false)) {
         return 0;
       }
 
