@@ -109,9 +109,11 @@ Jv880_juceAudioProcessor::Jv880_juceAudioProcessor()
   currentPatchI++;
 
   for (int i = 0; i < NUM_EXPS; i++) {
-    if (romInfos[i + 6].loaded == false)
-        continue;
     patchInfoPerGroup.push_back(std::vector<PatchInfo *>());
+      if (romInfos[i + 6].loaded == false)
+          continue;
+      else if (i == 0 && romInfos[5].loaded == false)
+          continue;
 
     expansionsDescr[i] = loadedRoms[i + 6];
 
@@ -209,9 +211,9 @@ bool Jv880_juceAudioProcessor::isMidiEffect() const { return false; }
 double Jv880_juceAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
 int Jv880_juceAudioProcessor::getNumPrograms() {
-  return 64                // internal
-         + 64              // bank A
-         + 64              // bank B
+  return 65                // internal
+         + 65              // bank A
+         + 65              // bank B
          + totalPatchesExp // expansions
       ;
 }
