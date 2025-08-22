@@ -8,13 +8,15 @@
 
 #include "PluginEditor.h"
 #include "PluginProcessor.h"
+#include "rom.h"
+#include <algorithm>
 
 //==============================================================================
 Jv880_juceAudioProcessorEditor::Jv880_juceAudioProcessorEditor(
     Jv880_juceAudioProcessor &p)
     : AudioProcessorEditor(&p), audioProcessor(p),
-      lcd(p), patchBrowser(p), tabs(juce::TabbedButtonBar::TabsAtTop), editCommonTab(p),
-      editTone1Tab(p, 0), editTone2Tab(p, 1), editTone3Tab(p, 2), editTone4Tab(p, 3),
+      lcd(p), tabs(juce::TabbedButtonBar::TabsAtTop), patchBrowser(p), editCommonTab(p),
+      editTone1Tab(p, this, 0U), editTone2Tab(p, this, 1U), editTone3Tab(p, this, 2U), editTone4Tab(p, this, 3U),
       settingsTab(p)
 {
   addAndMakeVisible(lcd);
@@ -51,9 +53,37 @@ Jv880_juceAudioProcessorEditor::Jv880_juceAudioProcessorEditor(
           }
         });
   }
+  else
+  {
+      updateEditTabs();
+  }
 }
 
 Jv880_juceAudioProcessorEditor::~Jv880_juceAudioProcessorEditor() {}
+
+void Jv880_juceAudioProcessorEditor::updateEditTabs()
+{
+    editCommonTab.updateValues();
+    editTone1Tab.updateValues();
+    editTone2Tab.updateValues();
+    editTone3Tab.updateValues();
+    editTone4Tab.updateValues();
+    settingsTab.updateValues();
+}
+
+uint8_t Jv880_juceAudioProcessorEditor::getSelectedRomIdx()
+{
+    auto idx = patchBrowser.categoriesListBox.getSelectedRow();
+
+    if (idx <= 0)
+    {
+        return 2; // internal JV-880 ROM 2, contains multisample info table
+    }
+    else
+    {
+        return std::min(romCountRequired + idx, romCount - 1); // RD-500 expansion ROM and other SR-JV ROMs henceforth
+    }
+}
 
 void Jv880_juceAudioProcessorEditor::resized() {
   lcd.setBounds(0, 0, 820, 100);

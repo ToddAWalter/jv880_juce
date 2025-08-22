@@ -18,6 +18,9 @@ constexpr int NUM_EXPS = romCount - 6;
 //==============================================================================
 /**
 */
+
+class Jv880_juceAudioProcessorEditor;
+
 class Jv880_juceAudioProcessor  : public juce::AudioProcessor
 {
 public:
@@ -58,6 +61,8 @@ public:
 
     //==============================================================================
     void sendSysexParamChange(uint32_t address, uint8_t value);
+
+    std::vector<std::string> readMultisampleNames(uint8_t romIdx);
 
     struct PatchInfo
     {

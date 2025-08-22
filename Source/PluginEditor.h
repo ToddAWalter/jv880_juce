@@ -28,10 +28,12 @@ public:
     //==============================================================================
     void resized() override;
 
+    uint8_t getSelectedRomIdx();
+    void updateEditTabs();
+
 private:
     Jv880_juceAudioProcessor& audioProcessor;
 
-    // UI Components
     JV880LCD lcd;
     juce::TabbedComponent tabs;
     PatchBrowser patchBrowser;

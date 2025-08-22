@@ -52,7 +52,6 @@ public:
 
   void resized() override;
 
-private:
   Jv880_juceAudioProcessor &audioProcessor;
 
   class CategoriesListModel : public juce::ListBoxModel,
@@ -86,6 +85,7 @@ private:
       sendChangeMessage();
     }
   };
+
   CategoriesListModel categoriesListModel;
   juce::ListBox categoriesListBox;
 
@@ -176,6 +176,7 @@ private:
     CategoriesListModel *categoriesListModel;
     PatchBrowser *parent;
   };
+
   PatchesListModel *patchesListModels[columns];
   juce::ListBox *patchesListBoxes[columns];
 

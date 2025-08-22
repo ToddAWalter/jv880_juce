@@ -245,6 +245,7 @@ void Jv880_juceAudioProcessor::setCurrentProgram(int index) {
   mcuLock.enter();
 
   int expansionI = patchInfos[index].expansionI;
+
   if (expansionI != 0xff && status.currentExpansion != expansionI) {
     status.currentExpansion = expansionI;
     memcpy(mcu->pcm.waverom_exp, expansionsDescr[expansionI], 0x800000);
@@ -273,6 +274,11 @@ void Jv880_juceAudioProcessor::setCurrentProgram(int index) {
   }
 
   mcuLock.exit();
+
+  if (auto editor = getActiveEditor())
+  {
+      dynamic_cast<Jv880_juceAudioProcessorEditor*>(editor)->updateEditTabs();
+  }
 }
 
 const juce::String Jv880_juceAudioProcessor::getProgramName(int index) {
@@ -381,6 +387,11 @@ void Jv880_juceAudioProcessor::setStateInformation(const void *data,
   memcpy(&mcu->nvram[0x0d70], status.patch, 0x16a);
   mcu->SC55_Reset();
   mcuLock.exit();
+
+  if (auto editor = getActiveEditor())
+  {
+      dynamic_cast<Jv880_juceAudioProcessorEditor*>(editor)->updateEditTabs();
+  }
 }
 
 void Jv880_juceAudioProcessor::sendSysexParamChange(uint32_t address,
@@ -421,6 +432,56 @@ void Jv880_juceAudioProcessor::sendSysexParamChange(uint32_t address,
   mcuLock.enter();
   mcu->postMidiSC55(buf, 12);
   mcuLock.exit();
+}
+
+#define BITSWAP16(x) (((x & 0xFF00) >> 8) | ((x & 0x00FF) << 8))
+#define BITSWAP32(x) (((x & 0xFF000000) >> 24) | ((x & 0x00FF0000) >> 8) | ((x & 0x0000FF00) << 8) | ((x & 0x000000FF) << 24))
+
+std::vector<std::string> Jv880_juceAudioProcessor::readMultisampleNames(uint8_t romIdx)
+{
+    std::vector<std::string> names;
+
+    if (!romInfos[romIdx].loaded)
+    {
+        return names;
+    }
+
+    auto& msNamePtr = loadedRoms[romIdx];
+    const int msOffset = 0x3c;
+    uint16_t msCount;
+    uint32_t msTableAddr;
+
+    memcpy(&msCount, &msNamePtr[0x62], 2);
+    memcpy(&msTableAddr, &msNamePtr[0x84], 4);
+
+    // ROMs are written in big endian format...
+    msCount = BITSWAP16(msCount);
+    msTableAddr = BITSWAP32(msTableAddr);
+
+    // JV-880 factory multisamples start from a different place in ROM
+    if (romIdx == 2)
+    {
+        msCount = 129;
+        msTableAddr = 4;
+    }
+
+    std::string name;
+
+    name.reserve(12u);
+
+    for (int i = 0; i < msCount; i++)
+    {
+        name.clear();
+
+        for (int c = 0; c < 12; c++)
+        {
+            name.push_back((char)msNamePtr[msTableAddr + (msOffset * i) + c]);
+        }
+
+        names.emplace_back(name);
+    }
+
+    return names;
 }
 
 //==============================================================================
