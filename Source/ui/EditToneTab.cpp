@@ -1144,7 +1144,7 @@ void EditToneTab::sendSysexPatchToneChange1Byte(uint8_t address, uint8_t value)
     for (size_t i = 0; i < 5; i++) {
         checksum += data[i];
 
-        if (checksum >= 128) {
+        if (checksum > 128) {
             checksum -= 128;
         }
     }
@@ -1185,7 +1185,7 @@ void EditToneTab::sendSysexPatchToneChange2Byte(uint8_t address, uint8_t value)
     for (size_t i = 0; i < 6; i++) {
         checksum += data[i];
 
-        if (checksum >= 128) {
+        if (checksum > 128) {
             checksum -= 128;
         }
     }

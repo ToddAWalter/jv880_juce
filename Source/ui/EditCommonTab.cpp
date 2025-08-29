@@ -451,7 +451,7 @@ void EditCommonTab::sendSysexPatchNameChange()
     {
         checksum += buf[i];
 
-        if (checksum >= 128)
+        if (checksum > 128)
             checksum -= 128;
     }
 
@@ -486,7 +486,7 @@ void EditCommonTab::sendSysexPatchCommonParamChange(const uint8_t address, const
     {
         checksum += buf[i];
 
-        if (checksum >= 128)
+        if (checksum > 128)
            checksum -= 128;
     }
 
