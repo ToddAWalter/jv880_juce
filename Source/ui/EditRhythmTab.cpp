@@ -30,7 +30,7 @@ EditRhythmTab::EditRhythmTab
 
     for (uint8_t i = 36; i <= 96; i++)
     {
-        if (i % 12 == 0 and i > 36)
+        if (i % 12 == 0 && i > 36)
         {
             selectKeyComboBox.getRootMenu()->addColumnBreak();
         }
