@@ -103,6 +103,7 @@ public:
     int totalPatchesExp = 0;
 
     std::array<uint8_t*, romCount> loadedRoms = {0};
+    std::vector<std::string> ownedNames;
     bool loaded = false;
 
     juce::SpinLock mcuLock;

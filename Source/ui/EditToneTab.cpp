@@ -124,7 +124,7 @@ EditToneTab::EditToneTab
     aftDestALabel.attachToComponent(&aftDestAComboBox, true);
 
     addAndMakeVisible(aftDestAComboBox);
-    aftDestAComboBox.addListener(this);;
+    aftDestAComboBox.addListener(this);
     addMenuEntriesFromArray(aftDestAComboBox, modSources);
 
     addAndMakeVisible(aftSensASlider);
