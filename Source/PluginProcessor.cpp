@@ -176,9 +176,8 @@ VirtualJVProcessor::VirtualJVProcessor()
           patchesOffset = 0x18602;
       }
 
-      char *namePtr = (char *)calloc(32, 1);
-      patchInfos[currentPatchI].name = namePtr;
-      sprintf(namePtr, "Rhythm Set %d", j + 1);
+      ownedNames.push_back("Rhythm Set " + std::to_string(j + 1));
+      patchInfos[currentPatchI].name = ownedNames.back().c_str();
 
       patchInfos[currentPatchI].ptr =
           (const char *)&expansionsDescr[i][patchesOffset + j * 0xa7c];
@@ -188,7 +187,7 @@ VirtualJVProcessor::VirtualJVProcessor()
             (const char *)&loadedRoms[getRomIndex("rd500_patches.bin")]
                                      [patchesOffset];
 
-      patchInfos[currentPatchI].nameLength = strlen(namePtr);
+      patchInfos[currentPatchI].nameLength = (int)ownedNames.back().size();
       patchInfos[currentPatchI].expansionI = i;
       patchInfos[currentPatchI].patchI = j;
       patchInfos[currentPatchI].present = true;
@@ -208,7 +207,6 @@ VirtualJVProcessor::VirtualJVProcessor()
 
 VirtualJVProcessor::~VirtualJVProcessor() {
   mcuLock.enter();
-  memset(mcu, 0, sizeof(MCU));
   delete mcu;
   mcuLock.exit();
 }
@@ -288,6 +286,8 @@ void VirtualJVProcessor::setCurrentProgram(int index) {
 }
 
 const juce::String VirtualJVProcessor::getProgramName(int index) {
+  if (index < 0 || index >= getNumPrograms())
+    return {};
   int length = patchInfos[index].nameLength;
   const char *strPtr = (const char *)patchInfos[index].name;
   return juce::String(strPtr, length);

@@ -1173,7 +1173,6 @@ int MCU::startSC55(const uint8_t* s_rom1, const uint8_t* s_rom2, const uint8_t* 
             break;
         case ROM_SET_JV880:
             mcu_jv880 = true;
-            rom2_mask /= 2; // rom is half the size
             lcd.lcd_width = 820;
             lcd.lcd_height = 100;
             break;
@@ -1187,7 +1186,7 @@ int MCU::startSC55(const uint8_t* s_rom1, const uint8_t* s_rom2, const uint8_t* 
 
     memcpy(rom1, s_rom1, ROM1_SIZE);
     memcpy(rom2, s_rom2, ROM2_SIZE_JV880);
-    rom2_mask = ROM2_SIZE_JV880 - 1;
+    rom2_mask = ROM2_SIZE_JV880 - 1; // jv880 rom2 is half the size of other rom sets
     memcpy(nvram, s_nvram, NVRAM_SIZE);
 
     if (mcu_mk1)
