@@ -16,6 +16,8 @@ VirtualJVProcessor::VirtualJVProcessor()
               .withInput("Input", juce::AudioChannelSet::stereo(), true)
               .withOutput("Output", juce::AudioChannelSet::stereo(), true)) {
 
+  ownedNames.reserve(52);
+
   mcu = new MCU();
 
   if (!preloadAll(loadedRoms))
