@@ -76,6 +76,11 @@ public:
         setLookAndFeel(&lookAndFeel);
     };
 
+    ~Slider()
+    {
+        setLookAndFeel(nullptr);
+    }
+
     void mouseDown(const juce::MouseEvent& e) override
     {
         if (isEnabled() && e.mods.isRightButtonDown())
