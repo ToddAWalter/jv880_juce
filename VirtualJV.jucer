@@ -86,8 +86,6 @@
     <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
             useGlobalPath="0"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_audio_processors_headless" showAllCode="1" useLocalCopy="0"
-            useGlobalPath="0"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
@@ -117,7 +115,6 @@
         <MODULEPATH id="juce_audio_devices" path="./JUCE/modules"/>
         <MODULEPATH id="juce_audio_utils" path="./JUCE/modules"/>
         <MODULEPATH id="juce_animation" path="./JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors_headless" path="./JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <XCODE_IPHONE targetFolder="Builds/iOS" bigIcon="DiWlj3" smallIcon="DiWlj3">
@@ -139,7 +136,6 @@
         <MODULEPATH id="juce_graphics" path="./JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="./JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="./JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors_headless" path="./JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="DiWlj3" bigIcon="DiWlj3">
@@ -161,7 +157,6 @@
         <MODULEPATH id="juce_graphics" path="./JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="./JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="./JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors_headless" path="./JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2022 targetFolder="Builds/VisualStudio2022" smallIcon="DiWlj3" bigIcon="DiWlj3">
@@ -184,7 +179,6 @@
         <MODULEPATH id="juce_audio_utils" path="./JUCE/modules"/>
         <MODULEPATH id="juce_audio_formats" path="./JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="./JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors_headless" path="./JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
   </EXPORTFORMATS>
