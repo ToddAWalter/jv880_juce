@@ -1253,7 +1253,21 @@ void MCU::updateSC55WithSampleRate(float *dataL, float *dataR, unsigned int nFra
         return;
     }
 
-    sample_write_ptr = 0;
+    // Deliberately NOT reset to 0 unconditionally. The PCM chip posts samples in
+    // pairs (oversampling is unconditionally on in PCM_Update), so the loop
+    // below, which stops at `sample_write_ptr >= renderBufferFrames`, overshoots
+    // by exactly one sample whenever renderBufferFrames is odd. Resetting the
+    // write pointer here threw that sample away, punching a one-sample gap into
+    // the 64 kHz stream on every block. Those samples are already sitting at the
+    // front of sample_buffer_*, carried over by the memmove at the bottom of
+    // this function, and sample_write_ptr is their count, so the loop simply
+    // renders fewer of its own.
+    //
+    // A rate change is the one case where the carry is dropped: the resampler is
+    // reopened below, so its history and phase restart and the output is
+    // discontinuous there regardless.
+    if (savedDestSampleRate != destSampleRate)
+        sample_write_ptr = 0;
 
     int maxCycles = nFrames * 256;
 
@@ -1312,6 +1326,24 @@ void MCU::updateSC55WithSampleRate(float *dataL, float *dataR, unsigned int nFra
 
     outL = resample_process(resampleL, ratio, sample_buffer_l, renderBufferFrames, false, &inUsedL, dataL, nFrames);
     outR = resample_process(resampleR, ratio, sample_buffer_r, renderBufferFrames, false, &inUsedR, dataR, nFrames);
+
+    // The resampler was handed the first renderBufferFrames samples. Anything
+    // past that is the odd-length overshoot described at the top of this
+    // function: move it to the front of the buffer and let the next block
+    // continue from there, so the 64 kHz stream stays gap-free across block
+    // boundaries. Bounded at one sample, because PCM_Update only ever advances
+    // sample_write_ptr by an even count and so cannot step over
+    // renderBufferFrames by more than one.
+    const unsigned int leftover = (unsigned int)sample_write_ptr > renderBufferFrames
+                                    ? (unsigned int)sample_write_ptr - renderBufferFrames
+                                    : 0u;
+    if (leftover > 0) {
+        memmove(sample_buffer_l, sample_buffer_l + renderBufferFrames,
+                leftover * sizeof(sample_buffer_l[0]));
+        memmove(sample_buffer_r, sample_buffer_r + renderBufferFrames,
+                leftover * sizeof(sample_buffer_r[0]));
+    }
+    sample_write_ptr = (int)leftover;
 
     samplesError += currentError;
     // printf("error: %f total: %f\n", currentError, samplesError);
